@@ -10,8 +10,54 @@ export default function ChallengesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Mock challenges for preview
+  const mockChallenges = [
+    {
+      id: 'mock-challenge',
+      userId: 'mock-user',
+      templateId: 'marathon-template-001',
+      title: '東京マラソン2024',
+      goalType: 'sub4',
+      goalDetails: { targetTime: 14400 },
+      targetDate: new Date('2024-03-03'),
+      status: 'declared' as const,
+      createdAt: new Date('2024-01-15'),
+      updatedAt: new Date('2024-01-15'),
+    },
+    {
+      id: 'mock-with-result',
+      userId: 'mock-user',
+      templateId: 'marathon-template-001',
+      title: '大阪マラソン2023',
+      goalType: 'sub4',
+      goalDetails: { targetTime: 14400 },
+      targetDate: new Date('2023-11-26'),
+      status: 'completed' as const,
+      createdAt: new Date('2023-10-01'),
+      updatedAt: new Date('2023-11-26'),
+    },
+    {
+      id: 'mock-challenge-3',
+      userId: 'mock-user',
+      templateId: 'marathon-template-001',
+      title: '神戸マラソン2024',
+      goalType: 'completion',
+      goalDetails: {},
+      targetDate: new Date('2024-11-17'),
+      status: 'declared' as const,
+      createdAt: new Date('2024-01-20'),
+      updatedAt: new Date('2024-01-20'),
+    },
+  ];
+
   useEffect(() => {
-    if (isAuthenticated && token) {
+    // Show mock data immediately for preview
+    if (!isAuthenticated) {
+      setTimeout(() => {
+        setChallenges(mockChallenges);
+        setLoading(false);
+      }, 500);
+    } else if (token) {
       fetchChallenges();
     }
   }, [isAuthenticated, token]);
@@ -49,20 +95,7 @@ export default function ChallengesPage() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            ログインが必要です
-          </h1>
-          <p className="text-gray-600 mb-6">
-            チャレンジを表示するにはウォレットでログインしてください。
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Show content even without authentication for preview
 
   return (
     <div className="min-h-screen py-8">
@@ -71,15 +104,27 @@ export default function ChallengesPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">チャレンジ一覧</h1>
             <p className="text-gray-600 mt-2">
-              あなたのマラソンチャレンジを管理できます。
+              {isAuthenticated 
+                ? 'あなたのマラソンチャレンジを管理できます。'
+                : 'マラソンチャレンジのサンプルです。ウォレット接続後に実際の機能を利用できます。'
+              }
             </p>
           </div>
-          <a
-            href="/challenges/new"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            新しいチャレンジを作成
-          </a>
+          {isAuthenticated ? (
+            <a
+              href="/challenges/new"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              新しいチャレンジを作成
+            </a>
+          ) : (
+            <button
+              onClick={() => window.location.href = '/'}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              ウォレット接続
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -118,53 +163,74 @@ export default function ChallengesPage() {
             </a>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {challenges.map((challenge) => (
-              <div key={challenge.id} className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {challenge.title}
-                  </h3>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    challenge.status === 'declared' ? 'bg-blue-100 text-blue-800' :
-                    challenge.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {challenge.status === 'declared' ? '宣言済み' :
-                     challenge.status === 'completed' ? '完了' : challenge.status}
-                  </span>
-                </div>
-                
-                <div className="space-y-2 text-sm text-gray-600 mb-4">
-                  <div>
-                    <span className="font-medium">開催日:</span>{' '}
-                    {new Date(challenge.targetDate).toLocaleDateString('ja-JP')}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {challenges.map((challenge) => (
+                <div key={challenge.id} className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {challenge.title}
+                    </h3>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      challenge.status === 'declared' ? 'bg-blue-100 text-blue-800' :
+                      challenge.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {challenge.status === 'declared' ? '宣言済み' :
+                       challenge.status === 'completed' ? '完了' : challenge.status}
+                    </span>
                   </div>
-                  <div>
-                    <span className="font-medium">目標:</span>{' '}
-                    {challenge.goalType === 'completion' ? '完走' :
-                     challenge.goalType === 'sub4' ? 'サブ4' :
-                     challenge.goalType === 'sub3' ? 'サブ3' :
-                     challenge.goalType === 'sub3_5' ? 'サブ3.5' :
-                     'カスタム'}
+                  
+                  <div className="space-y-2 text-sm text-gray-600 mb-4">
+                    <div>
+                      <span className="font-medium">開催日:</span>{' '}
+                      {new Date(challenge.targetDate).toLocaleDateString('ja-JP')}
+                    </div>
+                    <div>
+                      <span className="font-medium">目標:</span>{' '}
+                      {challenge.goalType === 'completion' ? '完走' :
+                       challenge.goalType === 'sub4' ? 'サブ4' :
+                       challenge.goalType === 'sub3' ? 'サブ3' :
+                       challenge.goalType === 'sub3_5' ? 'サブ3.5' :
+                       'カスタム'}
+                    </div>
+                    <div>
+                      <span className="font-medium">作成日:</span>{' '}
+                      {new Date(challenge.createdAt).toLocaleDateString('ja-JP')}
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-medium">作成日:</span>{' '}
-                    {new Date(challenge.createdAt).toLocaleDateString('ja-JP')}
-                  </div>
-                </div>
 
-                <div className="flex justify-end">
-                  <a
-                    href={`/challenges/${challenge.id}`}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  <div className="flex justify-end">
+                    <a
+                      href={`/challenges/${challenge.id}`}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      詳細を見る →
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {!isAuthenticated && (
+              <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-blue-900 mb-2">
+                    プレビューモード
+                  </h3>
+                  <p className="text-blue-700 mb-4">
+                    これはサンプルデータです。実際の機能を使用するにはウォレットを接続してください。
+                  </p>
+                  <button
+                    onClick={() => window.location.href = '/'}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    詳細を見る →
-                  </a>
+                    ウォレットを接続
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

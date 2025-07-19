@@ -42,12 +42,31 @@ export default function HomePage() {
             </p>
             
             {!isAuthenticated ? (
-              <button
-                onClick={handleLogin}
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                ウォレットで始める
-              </button>
+              <div className="space-y-4">
+                <button
+                  onClick={handleLogin}
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors block mx-auto"
+                >
+                  ウォレットで始める
+                </button>
+                <div className="text-center">
+                  <p className="text-white/80 text-sm mb-3">または、まずはプレビューを確認</p>
+                  <div className="space-x-4">
+                    <a
+                      href="/challenges/mock-challenge"
+                      className="border border-white/50 text-white px-4 py-2 rounded text-sm hover:bg-white/10 transition-colors inline-block"
+                    >
+                      宣言済みチャレンジ
+                    </a>
+                    <a
+                      href="/challenges/mock-with-result"
+                      className="border border-white/50 text-white px-4 py-2 rounded text-sm hover:bg-white/10 transition-colors inline-block"
+                    >
+                      完了済みチャレンジ
+                    </a>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="space-x-4">
                 <a
