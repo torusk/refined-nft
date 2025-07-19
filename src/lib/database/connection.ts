@@ -4,6 +4,11 @@ import { createConnection, Connection } from 'mysql2/promise';
 let connection: Connection | null = null;
 
 export async function getConnection(): Promise<Connection> {
+  // Skip database connection in development if not configured
+  if (process.env.NODE_ENV === 'development' && !process.env.DB_HOST) {
+    throw new Error('Database not configured - using mock data');
+  }
+  
   if (!connection) {
     connection = await createConnection({
       host: process.env.DB_HOST || 'localhost',

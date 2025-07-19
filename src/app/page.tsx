@@ -1,80 +1,158 @@
 'use client';
 
-import { useTexts } from '@/hooks/useTexts';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function Home() {
-  const texts = useTexts();
-  
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+export default function HomePage() {
+  const { user, isAuthenticated, isLoading, login } = useAuth();
 
-      {/* Hero Section */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl font-bold text-gray-900 mb-6 animate-fade-in">
-            {texts.home.title}
-          </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto animate-slide-up">
-            {texts.home.subtitle}
-          </p>
+  const handleLogin = async () => {
+    try {
+      await login();
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
         </div>
-      </section>
+      </div>
+    );
+  }
 
-      {/* Features */}
-      <section className="py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Quest Card */}
-            <Card hover>
-              <CardHeader
-                icon={
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                }
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Marathon Challenge Protocol
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              マラソンの挑戦を宣言し、記録をNFTとして永続化
+            </p>
+            <p className="text-lg mb-12 opacity-80 max-w-3xl mx-auto">
+              大会への参加を事前に宣言し、目標を設定。完走後は結果を記録して、
+              達成度に応じたNFTメダルを獲得できます。
+            </p>
+            
+            {!isAuthenticated ? (
+              <button
+                onClick={handleLogin}
+                className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
               >
-                {texts.quest.title}
-              </CardHeader>
-              <CardContent className="mb-6">
-                {texts.quest.description}
-              </CardContent>
-              <CardFooter>
-                <Link href="/quest">
-                  <Button variant="primary" size="lg">
-                    {texts.quest.startButton}
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-
-            {/* Claim Card */}
-            <Card hover>
-              <CardHeader
-                icon={
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                }
-              >
-                {texts.claim.title}
-              </CardHeader>
-              <CardContent className="mb-6">
-                {texts.claim.description}
-              </CardContent>
-              <CardFooter>
-                <Link href="/claim">
-                  <Button variant="success" size="lg">
-                    {texts.claim.startButton}
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
+                ウォレットで始める
+              </button>
+            ) : (
+              <div className="space-x-4">
+                <a
+                  href="/challenges/new"
+                  className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
+                >
+                  新しいチャレンジを作成
+                </a>
+                <a
+                  href="/challenges"
+                  className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors inline-block"
+                >
+                  チャレンジ一覧
+                </a>
+              </div>
+            )}
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Features Section */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              プロトコルの流れ
+            </h2>
+            <p className="text-lg text-gray-600">
+              4つのステップで挑戦を記録
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600">1</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">宣言</h3>
+              <p className="text-gray-600">
+                参加する大会と目標を事前に宣言
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600">2</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">実行</h3>
+              <p className="text-gray-600">
+                マラソン大会に参加して走る
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-yellow-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-yellow-600">3</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">結果</h3>
+              <p className="text-gray-600">
+                完走証をアップロードして記録を提出
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-purple-600">4</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">確認</h3>
+              <p className="text-gray-600">
+                達成度に応じたNFTメダルを獲得
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* User Status */}
+      {isAuthenticated && user && (
+        <div className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                ようこそ、{user.displayName || 'ランナー'}さん！
+              </h2>
+              <p className="text-gray-600 mb-6">
+                あなたのマラソンチャレンジを管理しましょう。
+              </p>
+              <div className="flex space-x-4">
+                <a
+                  href="/challenges/new"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  新しいチャレンジを作成
+                </a>
+                <a
+                  href="/profile"
+                  className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  プロフィールを見る
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
