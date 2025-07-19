@@ -2,7 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { ChallengeTemplate, GoalType } from '@/types';
-import { timeToSeconds, formatTime } from '@/lib/database/connection';
+
+// Client-side utility functions
+function timeToSeconds(hours: number, minutes: number, seconds: number): number {
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+function formatTime(totalSeconds: number): string {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
 
 interface GoalSelectorProps {
   template: ChallengeTemplate;

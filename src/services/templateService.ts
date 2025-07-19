@@ -1,5 +1,13 @@
-import { getConnection } from '@/lib/database/connection';
 import { ChallengeTemplate, GoalType } from '@/types';
+
+// Only import database connection on server side
+let getConnection: any;
+
+if (typeof window === 'undefined') {
+  // Server-side only imports
+  const dbModule = require('@/lib/database/connection');
+  getConnection = dbModule.getConnection;
+}
 
 export class TemplateService {
   // Get all active templates

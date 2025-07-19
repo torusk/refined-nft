@@ -1,5 +1,10 @@
-// Database connection utilities
+// Database connection utilities (Server-side only)
 import { createConnection, Connection } from 'mysql2/promise';
+
+// Ensure this module is only used on server side
+if (typeof window !== 'undefined') {
+  throw new Error('Database connection module should only be used on server side');
+}
 
 let connection: Connection | null = null;
 

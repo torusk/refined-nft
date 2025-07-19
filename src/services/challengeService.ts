@@ -1,6 +1,17 @@
-import { getConnection, generateUUID } from '@/lib/database/connection';
 import { Challenge, ChallengeStatus } from '@/types';
-import { TemplateService } from './templateService';
+
+// Only import database connection and other services on server side
+let getConnection: any;
+let generateUUID: any;
+let TemplateService: any;
+
+if (typeof window === 'undefined') {
+  // Server-side only imports
+  const dbModule = require('@/lib/database/connection');
+  getConnection = dbModule.getConnection;
+  generateUUID = dbModule.generateUUID;
+  TemplateService = require('./templateService').TemplateService;
+}
 
 export class ChallengeService {
   // Create new challenge

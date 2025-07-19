@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types';
 import { useWallet } from '@/hooks/useWallet';
-import { AuthService } from '@/services/authService';
+import { ClientAuthService } from '@/lib/auth/client';
 
 interface AuthContextType {
   user: User | null;
@@ -29,9 +29,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Check for stored token on mount
     const storedToken = localStorage.getItem('auth_token');
-    if (storedToken) {
-      const decoded = AuthService.verifyToken(storedToken);
-      if (decoded) {
+    if (storedToken && ClientAuthService.isValidTokenFormat(storedToken)) {
+      const decoded = ClientAuthService.decodeTokenPayload(storedToken);
+      if (decoded && decoded.userId) {
         setToken(storedToken);
         // Fetch user data
         fetchUserData(decoded.userId);
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { data: { nonce } } = await nonceResponse.json();
 
       // Generate message and sign
-      const message = AuthService.generateAuthMessage(walletAddress, nonce);
+      const message = ClientAuthService.generateAuthMessage(walletAddress, nonce);
       const signature = await signMessage(message);
 
       // Login

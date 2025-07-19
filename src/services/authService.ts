@@ -1,7 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { ethers } from 'ethers';
-import { getConnection, generateUUID } from '@/lib/database/connection';
 import { User } from '@/types';
+
+// Only import database connection on server side
+let getConnection: any;
+let generateUUID: any;
+
+if (typeof window === 'undefined') {
+  // Server-side only imports
+  const dbModule = require('@/lib/database/connection');
+  getConnection = dbModule.getConnection;
+  generateUUID = dbModule.generateUUID;
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
