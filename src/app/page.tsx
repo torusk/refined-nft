@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { Dashboard } from '@/components/dashboard/Dashboard';
 
 export default function HomePage() {
   const { user, isAuthenticated, isLoading, login } = useAuth();
@@ -143,35 +144,14 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* User Status */}
-      {isAuthenticated && user && (
+      {/* Dashboard or User Status */}
+      {isAuthenticated && user ? (
         <div className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                ようこそ、{user.displayName || 'ランナー'}さん！
-              </h2>
-              <p className="text-gray-600 mb-6">
-                あなたのマラソンチャレンジを管理しましょう。
-              </p>
-              <div className="flex space-x-4">
-                <a
-                  href="/challenges/new"
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  新しいチャレンジを作成
-                </a>
-                <a
-                  href="/profile"
-                  className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  プロフィールを見る
-                </a>
-              </div>
-            </div>
+            <Dashboard />
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
